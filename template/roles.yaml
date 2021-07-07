@@ -1,0 +1,96 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Vepolink Deployment IAM Roles and Policies
+
+Parameters:
+  RoleName:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: /vplk/deployrole
+  IamPolicy:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: /vplk/iampolicy
+  S3Policy:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: /vplk/s3policy
+  Service:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: /vplk/servicetag
+  Environment:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: /vplk/env
+
+
+Resources:
+
+  VplkIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${RoleName}-${Environment}'
+      Description: Deployment specific role
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - 'cloudformation.amazonaws.com'
+                - 's3.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Tags:
+        - Key: Service
+          Value: !Ref Service
+        - Key: Environment
+          Value: !Ref Environment
+
+  VplkIamPolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      Description: IAM deployment managed policy
+      ManagedPolicyName: !Ref IamPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: IamDeploymentPolicy
+            Effect: Allow
+            Action:
+              - 'iam:CreatePolicy'
+              - 'iam:CreatePolicyVersion'
+              - 'iam:CreateRole'
+              - 'iam:DeletePolicy'
+              - 'iam:DeletePolicyVersion'
+              - 'iam:DeleteRole'
+              - 'iam:DeleteRolePolicy'
+              - 'iam:GetPolicy'
+              - 'iam:GetPolicyVersion'
+              - 'iam:GetRole'
+              - 'iam:GetRolePolicy'
+              - 'iam:ListPolicies'
+              - 'iam:ListRoles'
+              - 'iam:PassRole'
+              - 'iam:PutRolePolicy'
+              - 'iam:TagRole'
+              - 'iam:UpdateRole'
+              - 'iam:ListPolicyVersions'
+              - 'iam:ListRolePolicies'
+            Resource:
+              - !Sub 'arn:aws:iam::${AWS::AccountId}:role/*vplk*'
+
+  VplkS3Policy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      Description: S3 deployment managed policy
+      ManagedPolicyName: !Ref S3Policy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: S3DeploymentPolicy
+            Effect: Allow
+            Action:
+              - 's3:*'
+              - 'logs:CreateLogGroup'
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+            Resource:
+              - 'arn:aws:s3:::vplk-*'
+              - 'arn:aws:s3:::vplk-*/*'
+              - 'arn:aws:logs:*:*:/vplk/*'
