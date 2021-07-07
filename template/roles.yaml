@@ -74,6 +74,8 @@ Resources:
               - 'iam:ListRolePolicies'
             Resource:
               - !Sub 'arn:aws:iam::${AWS::AccountId}:role/*vplk*'
+      Roles:
+        - !Ref VplkIAMRole
 
   VplkS3Policy:
     Type: 'AWS::IAM::ManagedPolicy'
@@ -94,3 +96,5 @@ Resources:
               - 'arn:aws:s3:::vplk-*'
               - 'arn:aws:s3:::vplk-*/*'
               - 'arn:aws:logs:*:*:/vplk/*'
+      Roles:
+        - !Ref VplkIAMRole
