@@ -90,6 +90,8 @@ Resources:
             Action:
               - 'ssm:PutParameter'
               - 'ssm:GetParameter'
+              - 'ssm:DeleteParameter'
+              - 'ssm:AddTagsToResource'
             Resource:
               - '*'
       Roles:
