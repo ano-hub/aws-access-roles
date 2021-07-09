@@ -46,7 +46,7 @@ Resources:
     Type: 'AWS::IAM::ManagedPolicy'
     Properties:
       Description: IAM deployment managed policy
-      ManagedPolicyName: !Ref IamPolicy
+      ManagedPolicyName: !Sub '${IamPolicy}-${Environment}'
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -77,11 +77,29 @@ Resources:
       Roles:
         - !Ref VplkIAMRole
 
+  VplkSSMPolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      Description: SSM deployment managed policy
+      ManagedPolicyName: !Sub 'vplk-ssm-${Environment}'
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: S3DeploymentPolicy
+            Effect: Allow
+            Action:
+              - 'ssm:PutParameter'
+              - 'ssm:GetParameter'
+            Resource:
+              - '*'
+      Roles:
+        - !Ref VplkIAMRole
+
   VplkS3Policy:
     Type: 'AWS::IAM::ManagedPolicy'
     Properties:
       Description: S3 deployment managed policy
-      ManagedPolicyName: !Ref S3Policy
+      ManagedPolicyName: !Sub '${S3Policy}-${Environment}'
       PolicyDocument:
         Version: 2012-10-17
         Statement:
