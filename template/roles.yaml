@@ -92,6 +92,7 @@ Resources:
               - 'ssm:GetParameter'
               - 'ssm:DeleteParameter'
               - 'ssm:AddTagsToResource'
+              - 'ssm:GetParameters'
             Resource:
               - '*'
       Roles:
